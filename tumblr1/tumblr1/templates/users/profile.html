@@ -1,0 +1,226 @@
+{% extends 'base.html' %}
+
+ <title>{% block title %}Profile{% endblock title %}</title>
+
+{% block content %}
+    <div class="jumbotron mb-2">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-5 my-2">
+                <div class="profile-card">
+                    {% if current_user.user_image == '' %}
+                        <img src="{{url_for('static',filename='user_profile_images/default.png')}}" height='50px;' width='50px' >
+                     {% else %}
+                    <img class="profile-card-photo" src="static/user_profile_images/{{current_user.user_image}}">
+                    {% endif %}
+                </div>
+                <div class="profile-card">
+                    <div class="profile-card-name">{{current_user.name}}</div>
+                    <div class="profile-card-username">
+                        username <strong>{{current_user.username}}</strong>
+                    </div>
+                    <div class="profile-card-points"> Level : <b>1</b> Points : <b>0</b> 
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <ul class="profile-links-list">
+            </ul>                    
+            </div>
+            <div class="col-md-3">            
+                <a role="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#recentLikes" onclick="user_post_total_likes();" >Total Likes/Posts</a>
+                <a href="/edit_profile" role="button" class="btn btn-light">Edit Profile</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--model box recent likes -->
+<div class="modal fade" id="recentLikes" tabindex="-1" aria-labelledby="recentLikes" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <h1>Total Likes<img src="{{ url_for('static',filename='images/Heart-GIF.gif')}}" height="280px" width="300px" alt="">&nbsp;&nbsp;<span id="total_post_likes" style="font-size:200px;color:green;font-weight:bold;"></span></h1>
+                </div>
+                <div>
+                    <h1>Total Post <span class="iconify" data-icon="dashicons:edit-page" style="color: #e958cf;" data-width="300" data-height="280"></span>&nbsp;&nbsp;<span id="total_posts" style="font-size:200px;color:green;font-weight:bold;"></span></h1>
+                </div>
+                <div class="list-group">
+                    <table class="table table-bordered table-striped">
+                        <thead class="table-dark">
+                            <th colspan="2">A list of people who have liked your posts</th>
+                        </thead>
+                        <tbody id="total_users_name">
+                             
+                        </tbody>
+                      </table>     
+                </div>
+            </div>
+        </div>
+    </div>
+</div><!--end like model-->
+
+<div class="container">
+
+    {% for i in data %}  
+    <div class="row justify-content-center" id="post_del_row{{i.id}}">
+        <div class="col-md-6">
+            <div class="card" style="border-radius:30px;">
+                <div class="category">
+                    {% if i.category.category_type == "SPACE" %}
+                        <a class="yellow" href="/filter_categories/{{i.category.id}}" id="category{{i.id}}">{{i.category.category_type}}</a>
+                    {% elif i.category.category_type == "GENERAL" %}    
+                        <a class="urple" href="/filter_categories/{{i.category.id}}" id="category{{i.id}}">{{i.category.category_type}}</a>
+ 
+                    {% elif i.category.category_type == "YOUTUBE" %}    
+                        <a class="magenta" href="/filter_categories/{{i.category.id}}" id="category{{i.id}}">{{i.category.category_type}}</a>
+ 
+                    {% elif i.category.category_type == "LIFESTYLE" %}    
+                        <a class="quamarine" href="/filter_categories/{{i.category.id}}" id="category{{i.id}}">{{i.category.category_type}}</a>
+ 
+                    {% elif i.category.category_type == "PEOPLE" %}    
+                        <a class="blue" href="/filter_categories/{{i.category.id}}" id="category{{i.id}}">{{i.category.category_type}}</a>        
+                    {% endif %} 
+                </div> 
+                    {% if i.video_func == POST_TYPE.VIDEO %}
+                    <video autoplay="autoplay" controls="controls" preload="preload" style=" border-top-left-radius: 30px; border-top-right-radius: 30px;">
+                        <source src="/static/all_post/{{i.post_data}}" type="video/mp4" id="post_src{{i.id}}"> </source>  
+                    </video>
+                    {% elif i.video_func == POST_TYPE.IMAGE %}
+                        <img src="/static/all_post/{{i.post_data}}" style=" border-top-left-radius: 30px; border-top-right-radius: 30px;" id="post_src{{i.id}}">
+ 
+                    {% elif i.video_func == POST_TYPE.GIF %}  
+                        <img src="/static/all_post/{{i.post_data}}" style=" border-top-left-radius: 30px; border-top-right-radius: 30px;" id="post_src{{i.id}}">
+                    {% endif %}
+                <div>
+                    <div class="card-body text-center  py-3">
+                        <small class="me-3"><i class="icon-clock icons me-2"></i> {{i.show_datetime}} Posted ago</small>
+                        <small><i class="icon-eye icons me-2"></i> 553</small>
+                    <h5 class="card-title"  id="post_title{{i.id}}">{{i.post_title}}</h5>
+                    <p class="card-text" id="post_description{{i.id}}">{{i.post_description }}</p>       
+                </div>  
+              <div class="py-4 d-flex align-items-center">
+                <a class="author" href="/profile">
+                        {% if i.user.user_image == '' %}
+                             <img src="{{url_for('static',filename='user_profile_images/default.png')}}" height='50px;' width='50px'>&nbsp;
+                        {% else %}
+                            <img class="avatar-xs img-fluid rounded-circle" src="/static/user_profile_images/{{i.user.user_image}}">&nbsp;       
+                        {% endif %}
+                    <div><small>
+                        {{i.user.username}}
+                    </small></div><div class="vbadge"> 
+                    </div>
+                </a>
+                    <div class="card-like p-0">
+                          <div class="d-flex align-items-center">
+                              <!-- <span class="heart" ></span> -->
+                            {% if i.check_like_unlike==True %}
+                              <span  class="iconify" id="like_show{{i.id}}" onclick="heartid('{{i.id}}');" data-icon="ant-design:heart-filled" style="color: red; cursor:pointer;" data-width="35" data-height="35"></span>  
+                              <span  class="iconify" id="unlike_hide{{i.id}}" onclick="heartid('{{i.id}}');" data-icon="ci:heart-fill" data-width="35" data-height="35" style="cursor:pointer;display:none"></span>
+                            
+                              {% else %}
+                              <span  class="iconify" id="unlike_hide{{i.id}}" onclick="heartid('{{i.id}}');" data-icon="ci:heart-fill" data-width="35" data-height="35" style="cursor:pointer;"></span>
+                              <span  class="iconify" id="like_show{{i.id}}" onclick="heartid('{{i.id}}');" data-icon="ant-design:heart-filled" style="color: red; cursor:pointer;display:none" data-width="35" data-height="35"></span>  
+ 
+                            {% endif %}
+                              <span id="like_count{{i.id}}">
+                                {% if i.like_count %}  
+                                    {{i.like_count}}
+                                {% else %}
+                                    {% with zero_count=0 %}
+                                        {{zero_count}}
+                                    {% endwith %} 
+                                {% endif %}
+                            </span>
+                          </div>   
+                    </div>
+              </div>
+
+              <div class="d-flex justify-content-center align-items-center mt-4">
+                <!-- <a href="/update_post/{{i.id}}"><button type="button" class="me-2 btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal12">Update</button></a> -->
+                
+                <button class="me-2 btn btn-success" onclick="edit_post('{{i.id}}');" data-bs-toggle="modal" data-bs-target="#exampleModal12">Update</button>
+                <button class="me-2 btn btn-danger" onclick="delete_post('{{i.id}}');">Delete</button>
+            </div>
+            </div>
+            </div>
+        </div> 
+    </div>
+    {% endfor %}
+ </div>
+
+ 
+<!--Bootstrap Modal-->
+ <div class="modal fade" id="exampleModal12" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-white">
+            <div class="modal-body p-5">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="col-2">
+                            <button type="button" class="btn btn-lg btn-dark" data-bs-dismiss="modal" aria-label="Close"><i class="icon-close icons"></i></button>
+                        </div>
+                            <form method="POST" id="post_form" enctype="multipart/form-data">
+                                <div class="mb-3 row">
+                                    <label>Title</label>
+                                    <div class="col-md-7">
+                                        <input type="hidden" class="form-control" name="id" id="id">
+                                        <input type="text" class="form-control" name="post_title" id="post_title">
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label>Description</label>
+                                    <div class="col-md-7">
+                                        <textarea class="form-control" name="post_desc" id="post_desc"></textarea>
+                                    </div>
+                                </div>
+                                <div class="mb-5 row">
+                                    <label>Post Type</label>
+                                    <div class="col-sm-7 mb-3">
+                                        <select class="form-control" id='post_type' name="post_type">
+                                                        <option value="">------choose Type------</option> 
+                                                        <option value="IMAGE">IMAGE</option>
+                                                        <option value="VIDEO" >VIDEO</option>
+                                                        <option value="GIF">GIF</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-3  mb-3">
+                                        <div> 
+                                            <video autoplay="autoplay" controls="controls" preload="preload" height="150px;" width="200px;" id="video_prev">
+                                                <source src="" type="video/mp4" ></source>  
+                                            </video> 
+                                            <img src="" id="img_prev" height="150px;" width="200px;">
+
+                                            <input type="file" name='img_gif_video' id="post_view_id">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label>Select Gategory</label>
+                                    <div class="col-md-7"> 
+                                        <select class="form-control" name="category_type_id" id="category_type" required>
+                                            <option value="">------choose categories------</option> 
+                                            {% for i in categories %}
+                                                <option value="{{ i.id }}">{{ i.category_type }}</option> 
+                                            {% endfor %}    
+                                        </select>
+                                    </div>
+                                </div>
+                               
+                             </form>  
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" data-dismiss="modal" id="save_changes_data" onclick="update_post()">Save changes</button>
+                            </div>     
+                    </div>                      
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
+<!-- Button trigger modal -->
+  <!-- <button type="button" class="btn btn-primary"  data-bs-toggle="modal" data-bs-target="#exampleModal12">Update</button>  -->
+{% endblock  content %}

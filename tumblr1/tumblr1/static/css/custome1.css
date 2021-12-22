@@ -1,0 +1,74 @@
+.divimg
+{
+    background-image: url(../../static/uploads/1600259312.jpg);
+    color: white;
+    padding: 5px;
+    width:50%;
+    height:50%;
+    background-size: cover;
+    border-radius: 20px;
+    text-align: center;
+}
+.card
+{
+    border-radius: 40px;
+}
+.yellow
+{
+    background-color: #ffc107!important;
+}
+.urple 
+{
+    background-color: #800080!important;
+}
+.blue 
+{
+    background-color: #0000FF!important;
+}
+.magenta 
+{
+    background-color: #FF00FF!important;
+}
+.quamarine 
+{
+    background-color: #800000!important;
+}
+
+.categories-space
+{
+    background-image: url(../uploads/1600259834.jpg);
+    background-size: cover;
+    height: 222px;
+    width: 445px;
+}
+.categories-general
+{
+    background-image: url(../uploads/1600518050.jpg);
+    background-size: cover;
+    height: 222px;
+    width: 445px;
+}
+.categories-youtube
+{
+    background-image: url(../uploads/1600518022.jpg);
+    background-size: cover;
+    height: 222px;
+    width: 445px;
+}
+.categories-lifestyle
+{
+    background-image: url(../uploads/6194eb7d1924c.jpg);
+    background-size: cover;
+    height: 222px;
+    width: 445px;
+}
+.categories-people
+{
+    background-image: url(../uploads/1600518089.jpg);
+    background-size: cover;
+    height: 222px;
+    width: 445px;
+}
+.modal-backdrop{
+    position: unset !important;
+}

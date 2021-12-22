@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+  {% block title %}Search Category{% endblock title %}
+{% block content %}
+
+<div class="container">
+  <form method="POST" action="/search_category">
+      <div class="input-group">
+        <input type="text" id="search_category" name="category" class="form-control rounded" placeholder="Search Category" aria-label="Search"
+        aria-describedby="search-addon" />
+        <button type="submit" class="btn btn-primary" id="search_category_btn">search</button>
+      </div>
+    </form>    
+</div>
+<hr><!--Seach  end-->
+
+<div class="container">
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+    <ul class=flashes>
+        {% for category,message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                <strong>Message:</strong> {{ message}}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </ul>
+{% endif %}
+{% endwith %} <!--end of flash messages-->
+</div>
+
+
+<div class="container">
+
+   {% for i in data %}  
+   <div class="row justify-content-center">
+       <div class="col-md-6">
+           <div class="card" style="border-radius:30px;">
+               <div class="category">
+                   {% if i.category.category_type == "SPACE" %}
+                       <a class="yellow" href="#">{{i.category.category_type}}</a>
+
+                   {% elif i.category.category_type == "GENERAL" %}    
+                       <a class="urple" href="#">{{i.category.category_type}}</a>
+
+                   {% elif i.category.category_type == "YOUTUBE" %}    
+                       <a class="magenta" href="#">{{i.category.category_type}}</a>
+
+                   {% elif i.category.category_type == "LIFESTYLE" %}    
+                       <a class="quamarine" href="#">{{i.category.category_type}}</a>
+
+                   {% elif i.category.category_type == "PEOPLE" %}    
+                       <a class="blue" href="#">{{i.category.category_type}}</a>        
+                   {% endif %} 
+               </div> 
+                   {% if i.video_func == POST_TYPE.VIDEO %}
+                   <video autoplay="autoplay" controls="controls" preload="preload" style=" border-top-left-radius: 30px; border-top-right-radius: 30px;">
+                       <source src="/static/all_post/{{i.post_data}}" type="video/mp4"></source>
+                   </video>
+                   {% elif i.video_func == POST_TYPE.IMAGE %}
+                       <img src="/static/all_post/{{i.post_data}}" style=" border-top-left-radius: 30px; border-top-right-radius: 30px;">
+
+                   {% elif i.video_func == POST_TYPE.GIF %}  
+                       <img src="/static/all_post/{{i.post_data}}" style=" border-top-left-radius: 30px; border-top-right-radius: 30px;">
+                   {% endif %}
+               <div>
+                   <div class="card-body text-center  py-3">
+                       <small class="me-3"><i class="icon-clock icons me-2"></i> {{i.show_datetime}} Posted ago</small>
+                       <small><i class="icon-eye icons me-2"></i> 553</small>
+                       <a href="/post_details/{{i.id}}">    
+                        <h5 class="card-title" style="color:black;">{{i.post_title}}</h5>
+                        <p class="card-text" style="color:black;">{{i.post_description }}</p>
+                    </a> 
+               </div>
+
+             <div class="py-4 d-flex align-items-center">
+               <a class="author" href="/profile">
+                       {% if i.user.user_image == '' %}
+                            <img src="{{url_for('static',filename='user_profile_images/default.png')}}" height='50px;' width='50px'>&nbsp;
+                       {% else %}
+                           <img class="avatar-xs img-fluid rounded-circle" src="/static/user_profile_images/{{i.user.user_image}}">&nbsp;       
+                       {% endif %}
+                   <div><small>
+                       {{i.user.username}}
+                   </small></div><div class="vbadge"> 
+                   </div>
+               </a>
+                   <div class="card-like p-0">
+                         <div class="d-flex align-items-center">
+                             <!-- <span class="heart" ></span> -->
+                           {% if i.check_like_unlike==True %}
+                             <span  class="iconify" id="like_show{{i.id}}" onclick="heartid('{{i.id}}');" data-icon="ant-design:heart-filled" style="color: red; cursor:pointer;" data-width="35" data-height="35"></span>  
+                             <span  class="iconify" id="unlike_hide{{i.id}}" onclick="heartid('{{i.id}}');" data-icon="ci:heart-fill" data-width="35" data-height="35" style="cursor:pointer;display:none"></span>
+                           
+                             {% else %}
+                             <span  class="iconify" id="unlike_hide{{i.id}}" onclick="heartid('{{i.id}}');" data-icon="ci:heart-fill" data-width="35" data-height="35" style="cursor:pointer;"></span>
+                             <span  class="iconify" id="like_show{{i.id}}" onclick="heartid('{{i.id}}');" data-icon="ant-design:heart-filled" style="color: red; cursor:pointer;display:none" data-width="35" data-height="35"></span>  
+
+                           {% endif %}
+                             <span id="like_count{{i.id}}">
+                               {% if i.like_count %}  
+                                   {{i.like_count}}
+                               {% else %}
+                                   {% with zero_count=0 %}
+                                       {{zero_count}}
+                                   {% endwith %} 
+                               {% endif %}
+                           </span>
+                         </div>   
+                   </div>
+             </div>
+           </div>
+           </div>
+       </div> 
+   </div>
+   {% endfor %}
+</div>
+
+{% endblock content %}

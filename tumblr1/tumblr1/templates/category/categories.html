@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+ {% block title %}Categories{% endblock title %}
+
+{% block content %}
+<div class="container-fluid mt-5">
+    <div class="row">
+    <!--    {% for category in categories %}
+        <div class="column size-1of4">
+            <div class="card border-one bg-dark text-white">
+                <div class="categories-lifestyle border-one"></div>
+                <div class="card-img-overlay bg-over">
+                    <a class="link-over" href="#"></a>
+                    <p class="card-text text-muted text-uppercase mb-0">{{category.category_type}}</p>
+                    <h2 class="text-uppercase">{{category.category_type}} </h2>   
+                </div>
+            </div>
+        </div> 
+        {% endfor %}  -->
+        <!--sdfsdfsdfsdfsdfsd-->
+        {% for category in categories %}
+        <div class="column size-1of4"><div class="card border-one bg-dark text-white">
+            {% if category.category_type =="SPACE" %}
+                <div class="categories-space border-one"></div>
+            
+            {% elif category.category_type =="GENERAL" %}
+                <div class="categories-general border-one"></div>
+
+            {% elif category.category_type =="YOUTUBE" %}
+                <div class="categories-youtube border-one"></div>
+
+            {% elif category.category_type =="LIFESTYLE" %}
+                <div class="categories-lifestyle border-one"></div>
+
+            {% elif category.category_type =="PEOPLE" %}
+                <div class="categories-people border-one"></div>    
+            {% endif %}
+                    <div class="card-img-overlay bg-over">
+                        <a class="link-over" href="/filter_categories/{{category.id}}"></a>
+                        <p class="card-text text-muted text-uppercase mb-0">{{ category.category_type }}</p>
+                        <h2 class="text-uppercase"> {{ category.category_type }} </h2>   
+                    </div>
+            </div>
+        </div>
+        {% endfor %}
+
+    </div><!--row end-->
+</div><!--container end-->
+ 
+{% endblock content %}

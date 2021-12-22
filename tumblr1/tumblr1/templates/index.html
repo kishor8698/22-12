@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+
+ <title>{% block title %}Home{% endblock title %}</title>
+
+{% block content %}
+<div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <ul class=flashes>
+            {% for category,message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    <strong>Message:</strong> {{ message}}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% endwith %}
+</div>
+
+<div class="container">
+   {% if data %} <!--if data  not found in database -->
+    {% for i in data %}  
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card" style="border-radius:30px;">
+                <div class="category">
+                    {% if i.category.category_type == "SPACE" %}
+                        <a class="yellow" href="/filter_categories/{{i.category.id}}">{{i.category.category_type}}</a>
+
+                    {% elif i.category.category_type == "GENERAL" %}    
+                        <a class="urple" href="/filter_categories/{{i.category.id}}">{{i.category.category_type}}</a>
+
+                    {% elif i.category.category_type == "YOUTUBE" %}    
+                        <a class="magenta" href="/filter_categories/{{i.category.id}}">{{i.category.category_type}}</a>
+
+                    {% elif i.category.category_type == "LIFESTYLE" %}    
+                        <a class="quamarine" href="/filter_categories/{{i.category.id}}">{{i.category.category_type}}</a>
+
+                    {% elif i.category.category_type == "PEOPLE" %}    
+                        <a class="blue" href="/filter_categories/{{i.category.id}}">{{i.category.category_type}}</a>        
+                    {% endif %} 
+                </div> 
+                    {% if i.video_func == POST_TYPE.VIDEO %}
+                    <video autoplay="autoplay" controls="controls" preload="preload" style=" border-top-left-radius: 30px; border-top-right-radius: 30px;">
+                        <source src="static/all_post/{{i.post_data}}" type="video/mp4"></source>
+                    </video>
+                    {% elif i.video_func == POST_TYPE.IMAGE %}
+                        <img src="static/all_post/{{i.post_data}}" style=" border-top-left-radius: 30px; border-top-right-radius: 30px;">
+
+                    {% elif i.video_func == POST_TYPE.GIF %}  
+                        <img src="static/all_post/{{i.post_data}}" style=" border-top-left-radius: 30px; border-top-right-radius: 30px;">
+                    {% endif %}
+                <div>
+                    <div class="card-body text-center  py-3">
+                        <small class="me-3"><i class="icon-clock icons me-2"></i> {{i.show_datetime}} Posted ago</small>
+                        <small><i class="icon-eye icons me-2"></i> 553</small>
+                    <a href="/post_details/{{i.id}}">    
+                        <h5 class="card-title" style="color:black;">{{i.post_title}}</h5>
+                        <p class="card-text" style="color:black;">{{i.post_description }}</p>
+                    </a>    
+                    </div>
+              <div class="py-4 d-flex align-items-center">
+                  {% if i.user_id==current_user.id %} <a class="author" href="/profile">{% else %}  <a class="author" href="/individual_user_profile/{{ i.user.id }}"> {% endif %} 
+                        {% if i.user.user_image == '' %}
+                             <img src="{{url_for('static',filename='user_profile_images/default.png')}}" height='50px;' width='50px'>&nbsp;
+                        {% else %}
+                            <img class="avatar-xs img-fluid rounded-circle" src="static/user_profile_images/{{i.user.user_image}}">&nbsp;       
+                        {% endif %}
+                    <div>
+                        <small>
+                            {{i.user.username}}
+                        </small>
+                    </div>
+                </a>
+                    <div class="card-like p-0">
+                          <div class="d-flex align-items-center">
+                            <!--comment Logic-->  
+                            <span class="iconify" data-icon="bi:chat" data-width="35" data-height="35" style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#commentmodel{{i.id}}"></span>&nbsp;&nbsp;&nbsp;
+                            <!--model box comment -->
+                            <div class="modal fade" id="commentmodel{{i.id}}" tabindex="-1" aria-labelledby="recentLikes" style="display: none;" aria-hidden="true">
+                                <div class="modal-dialog modal-lg" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header border-0">
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            {% if current_user.is_authenticated %}
+                                            <form method="POST" id="comment_form{{i.id}}">
+                                                <textarea id="com-area{{i.id}}" name="comment_text" class="form-control mb-3" required placeholder="Write a comment..." rows="3" data-gramm="false" wt-ignore-input="true" data-quillbot-element="5ja7GnHkYESdMNoHX8AzZ"></textarea>
+                                                <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-3">
+                                                  <div id="show-com-msg" class="align-self-center"><span class="align-self-center"><small id="comment_successfully_submited"></small></span></div>
+                                                  <button id="postcomment" onclick="SubmitComment('{{i.id}}');" class="btn btn-primary btn-sm" type="button">Post Comment</button>
+                                                </div>
+                                            </form>
+                                            {% else %}
+                                            <span class="iconify" data-icon="fluent:comment-off-48-regular" data-width="100" data-height="100"></span> <h5>To leave a comment, you must first log in.</h5>
+                                            {% endif %}
+                                                <hr>
+                                                <ul id="parent_comment{{i.id}}">
+                                                {% for j in i.all_comment  %}
+                                                    {% if j.replay_comment_id == 0 %}
+                                                        <li id='delete_parent_comment{{j.id}}'>
+                                                                <div>
+                                                                    {% if current_user.id == j.user.id %}<img src="{{ url_for('static',filename='images/green_blink.gif')}}" height="15px;" width="10px;" alt="">{% endif %} 
+                                                                    {% if j.user.user_image == '' %}
+                                                                        <img src="{{url_for('static',filename='user_profile_images/default.png')}}"  class="avatar-xs img-fluid rounded-circle"><strong>  {{j.user.name}} </strong> {{j.comment_text}}
+                                                                     {% else %}
+                                                                      <img class="avatar-xs img-fluid rounded-circle" src="static/user_profile_images/{{j.user.user_image}}"><strong> {{j.user.name}} </strong> {{j.comment_text}}
+                                                                    {% endif %}
+                                                                    <button type="button" class="btn btn-link" id="replay_btn" onclick="replay_btn('{{j.id}}');">Replay</button>
+                                                                    <button type="button" class="btn btn-link" id="replay_btn" style="color:red;" onclick="delete_parent_comment('{{j.id}}');">Delete</button>
+                                                                   
+                                                                    <form class="reply_form" method="POST" id="reply_form{{j.id}}" style="display: none;">
+                                                                        <textarea name="child_comment_text"  id="child_comment_textarea{{j.id}}" class="form-control mb-3" rows="3" spellcheck="false" data-ms-editor="true" data-gramm="false" wt-ignore-input="true" data-quillbot-element="dO2SHQmmAIhUqYBw7Zfm0"></textarea>
+                                                                        <input type="hidden" value="{{i.id}}" name="post_id">
+                                                                        <button class="btn btn-primary btn-sm me-2" type="button" onclick="ReplySend('{{j.id}}');">Replay</button>
+                                                                        <button class="btn btn-secondary btn-sm" type="button" onclick="RemoveBox('{{j.id}}');">Cancel</button></form>
+                                                                </div><!---end of div -->
+                                                           
+                                                                  <!-- <div> -->
+                                                                    <ul id="child_comment{{j.id}}">  
+                                                                    {% for k in i.all_comment %}
+                                                                        {% if j.id == k.replay_comment_id %}
+                                                                               <li id='delete_child_comment{{k.id}}'>
+                                                                                    {% if k.user.user_image == '' %}
+                                                                                        <img src="{{url_for('static',filename='user_profile_images/default.png')}}"  class="avatar-xs img-fluid rounded-circle"><strong> {{ k.user.name }} </strong> {{ k.comment_text }}
+                                                                                    {% else %}
+                                                                                        <img class="avatar-xs img-fluid rounded-circle" src="static/user_profile_images/{{k.user.user_image}}"><strong> {{ k.user.name }} </strong> {{  k.comment_text }}
+                                                                                    {% endif %}
+                                                                                    <button type="button" class="btn btn-link" id="replay_btn" onclick="grant_replay_btn('{{k.id}}');">Replay</button>
+                                                                                    <button type="button" class="btn btn-link" id="replay_btn" style="color:red;" onclick="delete_child_comment('{{k.id}}');">Delete</button>
+
+
+                                                                                    <form class="reply_form" method="POST" id="reply_form{{k.id}}" style="display: none;">
+                                                                                        <textarea name="child_comment_text"  id="child_comment_textarea{{k.id}}" class="form-control mb-3" rows="3" spellcheck="false" data-ms-editor="true" data-gramm="false" wt-ignore-input="true" data-quillbot-element="dO2SHQmmAIhUqYBw7Zfm0"></textarea>
+                                                                                        <input type="hidden" value="{{i.id}}" name="post_id">
+                                                                                        <button class="btn btn-primary btn-sm me-2" type="button" onclick="grant_ReplySend('{{k.id}}');">Replay</button>
+                                                                                        <button class="btn btn-secondary btn-sm" type="button" onclick="grant_RemoveBox('{{k.id}}');">Cancel</button></form>
+                                                                              
+                                                                                <ul id="grant_child_comment{{k.id}}">  
+                                                                                    {% for l in i.all_comment %}
+                                                                                        {% if k.id == l.replay_comment_id %}
+                                                                                               <li>
+                                                                                                        {% if l.user.user_image == '' %}
+                                                                                                            <img src="{{url_for('static',filename='user_profile_images/default.png')}}"  class="avatar-xs img-fluid rounded-circle"><strong> {{ l.user.name }} </strong> {{ l.comment_text }}
+                                                                                                        {% else %}
+                                                                                                            <img class="avatar-xs img-fluid rounded-circle" src="static/user_profile_images/{{l.user.user_image}}"><strong> {{ l.user.name }} </strong> {{  l.comment_text }}
+                                                                                                        {% endif %}
+                                                                                               </li>
+                                                                                        {% endif %}
+                                                                                    {% endfor %} 
+                                                                                </ul>
+                                                                            </li>            
+                                                                        {% endif %}
+                                                                    {% endfor %}          
+                                                                    </ul>
+                                                                  <!-- </div>   -->
+                                                                <hr>       
+                                                        </li>
+                                                    {% endif %}   
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div><!--end comment model-->
+
+
+
+                            {% if i.check_like_unlike==True %}
+                              <span  class="iconify" id="like_show{{i.id}}" onclick="heartid('{{i.id}}');" data-icon="ant-design:heart-filled" style="color: red; cursor:pointer;" data-width="35" data-height="35"></span>  
+                              <span  class="iconify" id="unlike_hide{{i.id}}" onclick="heartid('{{i.id}}');" data-icon="ci:heart-fill" data-width="35" data-height="35" style="cursor:pointer;display:none"></span>
+                            
+                              {% else %}
+                              <span  class="iconify" id="unlike_hide{{i.id}}" onclick="heartid('{{i.id}}');" data-icon="ci:heart-fill" data-width="35" data-height="35" style="cursor:pointer;"></span>
+                              <span  class="iconify" id="like_show{{i.id}}" onclick="heartid('{{i.id}}');" data-icon="ant-design:heart-filled" style="color: red; cursor:pointer;display:none" data-width="35" data-height="35"></span>  
+
+                            {% endif %}
+                              <span id="like_count{{i.id}}">
+                                {% if i.like_count %}  
+                                    {{i.like_count}}
+                                {% else %}
+                                    {% with zero_count=0 %}
+                                        {{zero_count}}
+                                    {% endwith %} 
+                                {% endif %}
+                            </span>
+                          </div>   
+                    </div>
+              </div>
+            </div>
+            </div>
+        </div> 
+    </div>
+    {% endfor %}
+   {% else %}
+   <h2>No post yet</h2>
+   {% endif %}
+</div>
+
+{% endblock content %}
+
+{% block footer %}
+    <footer class="blog-footer">
+    <ul class="list-inline">
+        
+       <li class="list-inline-item"><a class="text-light" href="#">Sample Page 2</a></li>
+        
+       <li class="list-inline-item"><a class="text-light" href="#">Sample Page</a></li>
+        
+    </ul>
+    <div class="text-muted foottxt"><p>© 2021 Tumblr Web Portfolio.</p></div>
+</footer>
+{% endblock footer %}
+
+{% block js%}
+
+<!-- <script>
+function postid(id){
+    var id=id;
+    console.log(id);
+}
+</script> -->
+{% endblock js %}

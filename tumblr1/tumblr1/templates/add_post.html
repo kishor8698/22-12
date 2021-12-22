@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Post{% endblock title %}
+
+{% block content %}
+<div class="jumbotron jblight">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-9">
+                <h1 class="display-4">Add Post</h1>
+         </div>
+            <div class="col-md-3">
+                <div class="admin-item-img">
+                    <a href="/profile">
+                        {% if current_user.user_image == ''%}
+                            <img src="{{url_for('static',filename='user_profile_images/default.png')}}" height='50px;' width='50px'>
+                        {% else %}    
+                            <img src="static/user_profile_images/{{current_user.user_image}}" class="admin-image rounded-circle">
+                        {% endif %}    
+                    </a>
+                </div>
+                <a href="/profile">
+                    <p class="member-item-user">{{current_user.username}}</p>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<!--////////////////////////////////////////////////////////////////////////////////////////////////-->
+<div class="container mt-4" style="background-color:#fff;">
+    <div class="content">
+
+        <form method="POST" action="/add_post" id="post_form" enctype="multipart/form-data">
+            <div class="mb-3 row">
+                <label>Title</label>
+                <div class="col-md-7">
+                    <input type="text" class="form-control" id="post_title" name="post_title">
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label>Description</label>
+                <div class="col-md-7">
+                    <textarea class="form-control" id="post_desc" name="post_desc"></textarea>
+                </div>
+            </div>
+            <div class="mb-5 row">
+                <label>Post Type</label>
+                <div class="col-sm-7 mb-3">
+                    <select class="form-control" id='post_type' name="post_type">
+                                    <option value="">------choose Type------</option> 
+                                    <option value="IMAGE">IMAGE</option>
+                                    <option value="VIDEO" >VIDEO</option>
+                                    <option value="GIF">GIF</option>
+                    </select>
+                </div>
+                <div class="col-sm-3  mb-3">
+                    <div>
+                        <input type="file" name='img_gif_video' class="form-control" required>
+                        <span id='img_gif_video_msg'></span>
+                    </div>
+                </div
+            </div>
+            <div class="mb-3 row">
+                <label>Select Gategory</label>
+                <div class="col-md-7"> 
+                    <select class="form-control" name="category_type_id" required>
+                        <option value="">------choose categories------</option> 
+                        {% for i in categories %}
+                            <option value="{{ i.id }}">{{ i.category_type }}</option>
+                        {% endfor %}    
+                    </select>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <div class="col-md-7 mb-3">
+                    <button type="submit" class='btn btn-success btn-lg'>Submit Post</button>
+                </div>
+            </div>
+         </form>       
+    </div>
+</div>  
+{% endblock content %}
+{% block js %}
+
+{% endblock js%}

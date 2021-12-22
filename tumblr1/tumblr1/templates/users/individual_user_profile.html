@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+ <title>{% block title %}Profile{% endblock title %}</title>
+
+{% block content %}
+<div class="jumbotron mb-2">
+    <div class="container">
+        <div class="row align-items-center">
+
+            <div class="col-md-6 my-2">
+                <div class="profile-card">
+                    {% if user_details.user_image == '' %}
+                        <img src="{{url_for('static',filename='user_profile_images/default.png')}}" height='50px;' width='50px' >
+                     {% else %}
+                    <img class="profile-card-photo" src="/static/user_profile_images/{{user_details.user_image}}">
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-6"> 
+                <table class="table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Website Url</th>
+                        <th scope="col">Facebook</th>
+                        <th scope="col">Twitter</th>
+                        <th scope="col">Instagram</th>
+                        <th scope="col">LinkedIn</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>{{user_details.name}}</td>
+                        <td>{{user_details.username}}</td>
+                        <td>{{user_details.email}}</td>
+                        <td>{{user_details.website_url}}</td>
+                        <td>{{user_details.facebook}}</td>
+                        <td>{{user_details.twitter}}</td>
+                        <td>{{user_details.instagram}}</td>
+                        <td>{{user_details.linkedin}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+            </div>
+        </div>
+    </div>
+</div><!-- end of jumbotron-->
+
+<div class="container">
+
+    {% for i in data %}  
+    <div class="row justify-content-center" id="post_del_row{{i.id}}">
+        <div class="col-md-6">
+            <div class="card" style="border-radius:30px;">
+                <div class="category">
+                    {% if i.category.category_type == "SPACE" %}
+                        <a class="yellow" href="/filter_categories/{{i.category.id}}" id="category{{i.id}}">{{i.category.category_type}}</a>
+                    {% elif i.category.category_type == "GENERAL" %}    
+                        <a class="urple" href="/filter_categories/{{i.category.id}}" id="category{{i.id}}">{{i.category.category_type}}</a>
+ 
+                    {% elif i.category.category_type == "YOUTUBE" %}    
+                        <a class="magenta" href="/filter_categories/{{i.category.id}}" id="category{{i.id}}">{{i.category.category_type}}</a>
+ 
+                    {% elif i.category.category_type == "LIFESTYLE" %}    
+                        <a class="quamarine" href="/filter_categories/{{i.category.id}}" id="category{{i.id}}">{{i.category.category_type}}</a>
+ 
+                    {% elif i.category.category_type == "PEOPLE" %}    
+                        <a class="blue" href="/filter_categories/{{i.category.id}}" id="category{{i.id}}">{{i.category.category_type}}</a>        
+                    {% endif %} 
+                </div> 
+                    {% if i.video_func == POST_TYPE.VIDEO %}
+                    <video autoplay="autoplay" controls="controls" preload="preload" style=" border-top-left-radius: 30px; border-top-right-radius: 30px;" >
+                        <source src="/static/all_post/{{i.post_data}}" type="video/mp4" id="post_src{{i.id}}"> </source>  
+                    </video>
+                    {% elif i.video_func == POST_TYPE.IMAGE %}
+                        <img src="/static/all_post/{{i.post_data}}" style=" border-top-left-radius: 30px; border-top-right-radius: 30px;" id="post_src{{i.id}}">
+ 
+                    {% elif i.video_func == POST_TYPE.GIF %}  
+                        <img src="/static/all_post/{{i.post_data}}" style=" border-top-left-radius: 30px; border-top-right-radius: 30px;" id="post_src{{i.id}}">
+                    {% endif %}
+                <div>
+                    <div class="card-body text-center  py-3">
+                        <small class="me-3"><i class="icon-clock icons me-2"></i> {{i.show_datetime}} Posted ago</small>
+                        <small><i class="icon-eye icons me-2"></i> 553</small>
+                    <h5 class="card-title"  id="post_title{{i.id}}">{{i.post_title}}</h5>
+                    <p class="card-text" id="post_description{{i.id}}">{{i.post_description }}</p>       
+                </div>  
+              <div class="py-4 d-flex align-items-center">
+                {% if i.user_id==current_user.id %} <a class="author" href="/profile">{% else %}  <a class="author" href="/individual_user_profile/{{ i.user.id }}"> {% endif %} 
+                        {% if i.user.user_image == '' %}
+                             <img src="{{url_for('static',filename='user_profile_images/default.png')}}" height='50px;' width='50px'>&nbsp;
+                        {% else %}
+                            <img class="avatar-xs img-fluid rounded-circle" src="/static/user_profile_images/{{i.user.user_image}}">&nbsp;       
+                        {% endif %}
+                    <div><small>
+                        {{i.user.username}}
+                    </small></div><div class="vbadge"> 
+                    </div>
+                </a>
+                    <div class="card-like p-0">
+                          <div class="d-flex align-items-center">
+                              <!-- <span class="heart" ></span> -->
+                            {% if i.check_like_unlike==True %}
+                              <span  class="iconify" id="like_show{{i.id}}" onclick="heartid('{{i.id}}');" data-icon="ant-design:heart-filled" style="color: red; cursor:pointer;" data-width="35" data-height="35"></span>  
+                              <span  class="iconify" id="unlike_hide{{i.id}}" onclick="heartid('{{i.id}}');" data-icon="ci:heart-fill" data-width="35" data-height="35" style="cursor:pointer;display:none"></span>
+                            
+                              {% else %}
+                              <span  class="iconify" id="unlike_hide{{i.id}}" onclick="heartid('{{i.id}}');" data-icon="ci:heart-fill" data-width="35" data-height="35" style="cursor:pointer;"></span>
+                              <span  class="iconify" id="like_show{{i.id}}" onclick="heartid('{{i.id}}');" data-icon="ant-design:heart-filled" style="color: red; cursor:pointer;display:none" data-width="35" data-height="35"></span>  
+ 
+                            {% endif %}
+                              <span id="like_count{{i.id}}">
+                                {% if i.like_count %}  
+                                    {{i.like_count}}
+                                {% else %}
+                                    {% with zero_count=0 %}
+                                        {{zero_count}}
+                                    {% endwith %} 
+                                {% endif %}
+                            </span>
+                          </div>   
+                    </div>
+              </div>
+            </div>
+            </div>
+        </div> 
+    </div>
+    {% endfor %}
+ </div>
+{% endblock content %}

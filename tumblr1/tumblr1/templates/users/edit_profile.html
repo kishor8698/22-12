@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% block title %}Edit Profile{% endblock title %}
+{% block content %}
+    <div class="jumbotron jblight">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-12">
+                    <h1 class="display-4">Edit Profile</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-lg-pull-6 col-md-6">
+                <div class="profile-card">
+                    <div>
+                        {% if current_user.user_image == '' %}
+                            <img src="{{url_for('static',filename='user_profile_images/default.png')}}" height="150" width="250">
+                        {% else %}
+                        <img class="profile-card-photo" src="static/user_profile_images/{{log_user.user_image}}" height="150" width="300">
+                        {% endif %}
+                    </div>
+                    <div class="profile-card-name">{{log_user.name}}</div>
+                    <div class="profile-card-username">{{log_user.username}}</div>
+                </div>
+            </div>
+            <div class="col-lg-9 col-lg-push-3 col-md-6">
+                <section class="box-white">
+                    <form method="POST" action="/edit_profile" enctype="multipart/form-data">
+                        <input type="hidden" name="_method" value="">
+                        <input type="hidden" name="_token" value=""><div class="mb-3 row">
+                            <label for="name" class="col-sm-4 col-form-label">Name :</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" id="name" name="name" value="{{log_user.name}}" required="">
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="username" class="col-sm-4 col-form-label">Username :</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" id="username" name="username" value="{{log_user.username}}" disabled>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="email" class="col-sm-4 col-form-label">E-Mail Address :</label>
+                            <div class="col-sm-7">
+                                <input type="email" class="form-control" id="email" name="email" value="{{log_user.email}}" required="">
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                        <label class="col-sm-4 col-form-label">User image</label>
+                            <div class="col-sm-6">     
+                                <input type="file" class="form-control-file" id="avatar" name="img" aria-describedby="fileHelp"  >
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="website" class="col-sm-4 col-form-label">Website Url :</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" id="website" name="website" value="{{log_user.website_url}}">
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="facebook" class="col-sm-4 col-form-label">Facebook :</label>
+                            <div class="col-sm-7">
+                                <div class="input-group mb-2 me-sm-2 mb-sm-0">
+                                    <!-- <div class="input-group-addon"></div> -->
+                                    <input type="text" class="form-control" id="facebook" name="facebook" value="{{log_user.facebook}}">
+                                </div>                            
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="twitter" class="col-sm-4 col-form-label">Twitter :</label>
+                            <div class="col-sm-7">
+                                <div class="input-group mb-2 me-sm-2 mb-sm-0">
+                                    <!-- <div class="input-group-addon">twitter.com/</div> -->
+                                    <input type="text" class="form-control" id="twitter" name="twitter" value="{{log_user.twitter}}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="instagram" class="col-sm-4 col-form-label">Instagram :</label>
+                            <div class="col-sm-7">
+                                <div class="input-group mb-2 me-sm-2 mb-sm-0">
+                                    <!-- <div class="input-group-addon">instagram.com/</div> -->
+                                    <input type="text" class="form-control" id="instagram" name="instagram" value="{{log_user.instagram}}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="linkedin" class="col-sm-4 col-form-label">LinkedIn :</label>
+                            <div class="col-sm-7">
+                                    <input type="text" class="form-control" id="linkedin" name="linkedin" value="{{log_user.linkedin}}">
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <div class="offset-sm-4 col-sm-7">
+                                <button type="submit" class="btn btn-primary">Save</button>
+                                <a href="/edit_profile" class="btn btn-danger" role="button">Cancel</a> 
+                            </div>
+                        </div>
+                    </form>
+                </section>
+
+                <section class="box-white">
+                    <form method="POST" action="/change_password" enctype="multipart/form-data">
+                        <div class="mb-3 row">
+                            <label for="password" class="col-sm-4 col-form-label">Old Password :</label>
+                            <div class="col-sm-7">
+                                <input type="password" class="form-control" id="password" name="old_password" required="">
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="password" class="col-sm-4 col-form-label"> New Password :</label>
+                            <div class="col-sm-7">
+                                <input type="password" class="form-control" id="password" name="new_password" required="">
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="password_confirmation" class="col-sm-4 col-form-label">Confirm Password :</label>
+                            <div class="col-sm-7">
+                                <input type="password" class="form-control" id="password_confirmation" name="conform_password" required="">
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <div class="offset-sm-4 col-sm-7">
+                                <button type="submit" class="btn btn-primary">Change Password</button>
+                            </div>
+                        </div>
+                    </form>
+                </section>
+            </div>        
+        </div>
+    </div>    
+{% endblock content %}
